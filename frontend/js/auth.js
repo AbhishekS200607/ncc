@@ -1,6 +1,8 @@
 // Auth utilities — shared between login and dashboard
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:5000/api'
+  : '/api';
 
 const getToken = () => localStorage.getItem('ncc_admin_token');
 const getAdmin = () => JSON.parse(localStorage.getItem('ncc_admin_info') || '{}');
