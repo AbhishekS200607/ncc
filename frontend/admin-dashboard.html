@@ -13,19 +13,19 @@
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <div class="emblem">🎖️</div>
+      <div class="emblem" id="emblemIcon"></div>
       <h2>NCC Admin <span>Enrollment Portal</span></h2>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-item active" data-page="dashboard">
-        <span class="icon">📊</span> Dashboard
+        <span class="icon" id="navIconDashboard"></span> Dashboard
       </div>
       <div class="nav-item" data-page="applications">
-        <span class="icon">📋</span> Applications
+        <span class="icon" id="navIconApplications"></span> Applications
       </div>
     </nav>
     <div class="sidebar-footer">
-      <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
+      <button class="logout-btn" id="logoutBtn"><span id="logoutIcon"></span> Logout</button>
     </div>
   </aside>
 
@@ -35,7 +35,7 @@
     <!-- TOPBAR -->
     <header class="topbar">
       <div class="topbar-left">
-        <button class="menu-toggle" id="menuToggle">☰</button>
+        <button class="menu-toggle" id="menuToggle"><span id="menuIcon"></span></button>
         <h1 id="pageTitle">Dashboard</h1>
       </div>
       <div class="topbar-right">
@@ -52,14 +52,14 @@
       <!-- DASHBOARD PAGE -->
       <div class="page-section active" id="page-dashboard">
         <div class="stats-grid" id="statsGrid">
-          <div class="stat-card"><div class="stat-icon">📋</div><div class="stat-info"><div class="num" id="statTotal">—</div><div class="label">Total Applications</div></div></div>
-          <div class="stat-card blue"><div class="stat-icon">👨</div><div class="stat-info"><div class="num" id="statMale">—</div><div class="label">Male Applicants</div></div></div>
-          <div class="stat-card gold"><div class="stat-icon">👩</div><div class="stat-info"><div class="num" id="statFemale">—</div><div class="label">Female Applicants</div></div></div>
-          <div class="stat-card purple"><div class="stat-icon">🎖️</div><div class="stat-info"><div class="num" id="statCerts">—</div><div class="label">Certificate Holders</div></div></div>
-          <div class="stat-card green"><div class="stat-icon">📅</div><div class="stat-info"><div class="num" id="statToday">—</div><div class="label">Applications Today</div></div></div>
+          <div class="stat-card"><div class="stat-icon" id="statIconTotal"></div><div class="stat-info"><div class="num" id="statTotal">—</div><div class="label">Total Applications</div></div></div>
+          <div class="stat-card blue"><div class="stat-icon" id="statIconMale"></div><div class="stat-info"><div class="num" id="statMale">—</div><div class="label">Male Applicants</div></div></div>
+          <div class="stat-card gold"><div class="stat-icon" id="statIconFemale"></div><div class="stat-info"><div class="num" id="statFemale">—</div><div class="label">Female Applicants</div></div></div>
+          <div class="stat-card purple"><div class="stat-icon" id="statIconCerts"></div><div class="stat-info"><div class="num" id="statCerts">—</div><div class="label">Certificate Holders</div></div></div>
+          <div class="stat-card green"><div class="stat-icon" id="statIconToday"></div><div class="stat-info"><div class="num" id="statToday">—</div><div class="label">Applications Today</div></div></div>
         </div>
         <div style="background:var(--white);border-radius:var(--radius);padding:2rem;box-shadow:var(--shadow);text-align:center;">
-          <div style="font-size:3rem;margin-bottom:1rem;">📊</div>
+          <div style="font-size:3rem;margin-bottom:1rem;" id="welcomeIcon"></div>
           <h3 style="color:var(--olive-dark);margin-bottom:0.5rem;">Welcome to NCC Admin Dashboard</h3>
           <p style="color:var(--gray);font-size:0.9rem;">Use the sidebar to navigate. Go to <strong>Applications</strong> to view and manage all submissions.</p>
         </div>
@@ -70,47 +70,55 @@
 
         <!-- Toolbar -->
         <div class="toolbar">
-          <div class="search-box">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="searchInput" placeholder="Search by name or WhatsApp..." />
+          <div class="search-row">
+            <div class="search-box">
+              <span class="search-icon" id="searchIcon"></span>
+              <input type="text" id="searchInput" placeholder="Search by name or WhatsApp..." />
+            </div>
+            <button class="filter-toggle-btn" id="filterToggleBtn" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+              Filters
+            </button>
           </div>
-          <select class="filter-select" id="filterGender">
-            <option value="">All Genders</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Other">Other</option>
-          </select>
-          <select class="filter-select" id="filterCourse">
-            <option value="">All Departments</option>
-            <option value="Electrical and Electronic Engineering">Electrical &amp; Electronic Engg.</option>
-            <option value="Automobile Engineering">Automobile Engg.</option>
-            <option value="Civil Engineering">Civil Engg.</option>
-            <option value="Mechanical Engineering">Mechanical Engg.</option>
-            <option value="Electronics Engineering">Electronics Engg.</option>
-            <option value="Computer Science Engineering">Computer Science Engg.</option>
-          </select>
-          <select class="filter-select" id="filterCert">
-            <option value="">All Certificates</option>
-            <option value="A Certificate">A Certificate</option>
-            <option value="B Certificate">B Certificate</option>
-            <option value="NIL">NIL</option>
-          </select>
-          <select class="filter-select" id="filterActivity">
-            <option value="">All Activities</option>
-            <option value="SPC">SPC</option>
-            <option value="Scouts & Guides">Scouts &amp; Guides</option>
-            <option value="Red Cross">Red Cross</option>
-            <option value="Other">Other</option>
-            <option value="NIL">NIL</option>
-          </select>
-          <select class="filter-select" id="sortOrder">
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-            <option value="alpha">Alphabetical</option>
-          </select>
-          <div class="toolbar-actions">
-            <button class="btn-icon gold" id="exportCsvBtn">⬇️ CSV</button>
-            <button class="btn-icon primary" id="exportXlsxBtn">⬇️ Excel</button>
+          <div class="toolbar-filters" id="toolbarFilters">
+            <select class="filter-select" id="filterGender">
+              <option value="">All Genders</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+            <select class="filter-select" id="filterCourse">
+              <option value="">All Departments</option>
+              <option value="Electrical and Electronic Engineering">Electrical &amp; Electronic Engg.</option>
+              <option value="Automobile Engineering">Automobile Engg.</option>
+              <option value="Civil Engineering">Civil Engg.</option>
+              <option value="Mechanical Engineering">Mechanical Engg.</option>
+              <option value="Electronics Engineering">Electronics Engg.</option>
+              <option value="Computer Science Engineering">Computer Science Engg.</option>
+            </select>
+            <select class="filter-select" id="filterCert">
+              <option value="">All Certificates</option>
+              <option value="A Certificate">A Certificate</option>
+              <option value="B Certificate">B Certificate</option>
+              <option value="NIL">NIL</option>
+            </select>
+            <select class="filter-select" id="filterActivity">
+              <option value="">All Activities</option>
+              <option value="SPC">SPC</option>
+              <option value="Scouts & Guides">Scouts &amp; Guides</option>
+              <option value="Red Cross">Red Cross</option>
+              <option value="Other">Other</option>
+              <option value="NIL">NIL</option>
+            </select>
+            <select class="filter-select" id="sortOrder">
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="alpha">Alphabetical</option>
+            </select>
+            <div class="toolbar-actions">
+              <button class="btn-icon gold" id="exportCsvBtn"><span id="csvIcon"></span> CSV</button>
+              <button class="btn-icon primary" id="exportXlsxBtn"><span id="xlsxIcon"></span> Excel</button>
+            </div>
           </div>
         </div>
 
@@ -137,10 +145,11 @@
                 </tr>
               </thead>
               <tbody id="tableBody">
-                <tr><td colspan="14"><div class="empty-state"><div class="icon">⏳</div><h3>Loading...</h3></div></td></tr>
+                <tr><td colspan="14"><div class="empty-state"><div class="icon" id="loadingIcon"></div><h3>Loading...</h3></div></td></tr>
               </tbody>
             </table>
           </div>
+          <div class="mobile-cards" id="mobileCards"></div>
           <div class="pagination" id="pagination"></div>
         </div>
 
@@ -155,7 +164,7 @@
   <div class="modal">
     <div class="modal-header">
       <h3>Application Details</h3>
-      <button class="modal-close" data-modal="viewModal">✕</button>
+      <button class="modal-close" data-modal="viewModal"><span id="closeViewIcon"></span></button>
     </div>
     <div class="modal-body" id="viewModalBody"></div>
   </div>
@@ -166,7 +175,7 @@
   <div class="modal">
     <div class="modal-header">
       <h3>Edit Application</h3>
-      <button class="modal-close" data-modal="editModal">✕</button>
+      <button class="modal-close" data-modal="editModal"><span id="closeEditIcon"></span></button>
     </div>
     <div class="modal-body">
       <form id="editForm">
@@ -192,7 +201,7 @@
 <!-- DELETE CONFIRM -->
 <div class="modal-overlay" id="deleteModal">
   <div class="confirm-dialog">
-    <div class="icon">🗑️</div>
+    <div class="icon" id="deleteIcon"></div>
     <h3>Delete Application?</h3>
     <p>This action cannot be undone. The application will be permanently removed.</p>
     <div class="confirm-btns">
@@ -202,13 +211,40 @@
   </div>
 </div>
 
+<div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
 <!-- TOAST -->
 <div class="toast-container" id="toastContainer"></div>
 
 <!-- SPINNER -->
 <div class="spinner-overlay" id="spinner" style="display:none;"><div class="spinner"></div></div>
 
+<script src="js/icons.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/admin.js"></script>
+<script>
+  const _si = (id, key, sz) => {
+    const el = document.getElementById(id);
+    if (el) { el.innerHTML = ICONS[key]; el.style.cssText += `width:${sz};height:${sz};display:inline-flex;`; }
+  };
+  _si('emblemIcon',      'medal',     '2rem');
+  _si('navIconDashboard','barchart',  '1.1rem');
+  _si('navIconApplications','clipboard','1.1rem');
+  _si('logoutIcon',      'logout',    '1rem');
+  _si('menuIcon',        'menu',      '1.2rem');
+  _si('statIconTotal',   'clipboard', '1.8rem');
+  _si('statIconMale',    'usermale',  '1.8rem');
+  _si('statIconFemale',  'userfemale','1.8rem');
+  _si('statIconCerts',   'award',     '1.8rem');
+  _si('statIconToday',   'calendar',  '1.8rem');
+  _si('welcomeIcon',     'barchart',  '3rem');
+  _si('searchIcon',      'search',    '1rem');
+  _si('csvIcon',         'download',  '1rem');
+  _si('xlsxIcon',        'download',  '1rem');
+  _si('loadingIcon',     'clock',     '2rem');
+  _si('closeViewIcon',   'close',     '1rem');
+  _si('closeEditIcon',   'close',     '1rem');
+  _si('deleteIcon',      'trash',     '2rem');
+</script>
 </body>
 </html>

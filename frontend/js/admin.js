@@ -1,7 +1,7 @@
 // Admin Dashboard — applications management
 
 // State
-let state = { page: 1, search: '', gender: '', cert: '', activity: '', sort: 'newest', deleteTargetId: null };
+let state = { page: 1, search: '', gender: '', course: '', cert: '', activity: '', sort: 'newest', deleteTargetId: null };
 
 // DOM refs
 const tableBody = document.getElementById('tableBody');
@@ -16,7 +16,7 @@ const authHeaders = () => ({
 // Toast
 function showToast(msg, type = 'success') {
   const c = document.getElementById('toastContainer');
-  const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+  const icons = { success: ICONS.checkcircle, error: ICONS.alertcircle, info: ICONS.info };
   const t = document.createElement('div');
   t.className = `toast ${type}`;
   t.innerHTML = `<span>${icons[type]}</span><span>${msg}</span>`;
@@ -35,14 +35,29 @@ document.querySelectorAll('.nav-item').forEach(item => {
     document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
     document.getElementById(`page-${page}`).classList.add('active');
     document.getElementById('pageTitle').textContent = page.charAt(0).toUpperCase() + page.slice(1);
+    // close sidebar on mobile
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarBackdrop').classList.remove('show');
     if (page === 'applications') loadApplications();
     if (page === 'dashboard') loadStats();
   });
 });
 
+// Mobile filter toggle
+const filterToggleBtn = document.getElementById('filterToggleBtn');
+const toolbarFilters = document.getElementById('toolbarFilters');
+if (filterToggleBtn && toolbarFilters) {
+  filterToggleBtn.addEventListener('click', () => toolbarFilters.classList.toggle('open'));
+}
+
 // Mobile sidebar
 document.getElementById('menuToggle').addEventListener('click', () => {
   document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarBackdrop').classList.toggle('show');
+});
+document.getElementById('sidebarBackdrop').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarBackdrop').classList.remove('show');
 });
 
 // Set admin name
@@ -71,9 +86,10 @@ async function loadApplications() {
   showSpinner();
   const params = new URLSearchParams({
     page: state.page, limit: 15,
-    ...(state.search && { search: state.search }),
-    ...(state.gender && { gender: state.gender }),
-    ...(state.cert && { ncc_certificate: state.cert }),
+    ...(state.search   && { search: state.search }),
+    ...(state.gender   && { gender: state.gender }),
+    ...(state.course   && { course: state.course }),
+    ...(state.cert     && { ncc_certificate: state.cert }),
     ...(state.activity && { school_activity: state.activity }),
     sort: state.sort
   });
@@ -88,10 +104,12 @@ async function loadApplications() {
   finally { hideSpinner(); }
 }
 
-// Render table
+// Render table + mobile cards
 function renderTable(rows) {
+  const mobileCards = document.getElementById('mobileCards');
   if (!rows.length) {
-    tableBody.innerHTML = `<tr><td colspan="14"><div class="empty-state"><div class="icon">📭</div><h3>No applications found</h3><p>Try adjusting your search or filters</p></div></td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="14"><div class="empty-state"><div class="icon">${ICONS.inbox}</div><h3>No applications found</h3><p>Try adjusting your search or filters</p></div></td></tr>`;
+    if (mobileCards) mobileCards.innerHTML = `<div class="empty-state"><div class="icon">${ICONS.inbox}</div><h3>No applications found</h3><p>Try adjusting your search or filters</p></div>`;
     return;
   }
   tableBody.innerHTML = rows.map(r => `
@@ -111,13 +129,36 @@ function renderTable(rows) {
       <td style="white-space:nowrap;font-size:0.8rem;">${new Date(r.created_at).toLocaleDateString('en-IN')}</td>
       <td>
         <div class="action-btns">
-          <button class="action-btn view" title="View" onclick="viewApplication('${r.id}')">👁️</button>
-          <button class="action-btn edit" title="Edit" onclick="editApplication('${r.id}')">✏️</button>
-          <button class="action-btn delete" title="Delete" onclick="confirmDelete('${r.id}')">🗑️</button>
-          <button class="action-btn print" title="Print" onclick="printApplication('${r.id}')">🖨️</button>
+          <button class="action-btn view" title="View" onclick="viewApplication('${r.id}')">${ICONS.eye}</button>
+          <button class="action-btn edit" title="Edit" onclick="editApplication('${r.id}')">${ICONS.edit}</button>
+          <button class="action-btn delete" title="Delete" onclick="confirmDelete('${r.id}')">${ICONS.trash}</button>
+          <button class="action-btn print" title="Print" onclick="printApplication('${r.id}')">${ICONS.printer}</button>
         </div>
       </td>
     </tr>`).join('');
+
+  // Mobile cards
+  if (mobileCards) {
+    mobileCards.innerHTML = rows.map(r => `
+      <div class="app-card">
+        <div class="app-card-header">
+          <strong>${escHtml(r.name)}</strong>
+          <code>${r.application_id}</code>
+        </div>
+        <div class="app-card-row"><span>Gender</span><span><span class="badge ${r.gender.toLowerCase()}">${r.gender}</span></span></div>
+        <div class="app-card-row"><span>Department</span><span>${escHtml(r.course)}</span></div>
+        <div class="app-card-row"><span>WhatsApp</span><span>${escHtml(r.whatsapp)}</span></div>
+        <div class="app-card-row"><span>NCC Cert</span><span><span class="badge ${r.ncc_certificate === 'A Certificate' ? 'cert-a' : r.ncc_certificate === 'B Certificate' ? 'cert-b' : 'cert-nil'}">${r.ncc_certificate}</span></span></div>
+        <div class="app-card-row"><span>Height / Weight</span><span>${r.height} cm / ${r.weight} kg</span></div>
+        <div class="app-card-row"><span>Date</span><span>${new Date(r.created_at).toLocaleDateString('en-IN')}</span></div>
+        <div class="app-card-actions">
+          <button class="action-btn view" title="View" onclick="viewApplication('${r.id}')">${ICONS.eye}</button>
+          <button class="action-btn edit" title="Edit" onclick="editApplication('${r.id}')">${ICONS.edit}</button>
+          <button class="action-btn delete" title="Delete" onclick="confirmDelete('${r.id}')">${ICONS.trash}</button>
+          <button class="action-btn print" title="Print" onclick="printApplication('${r.id}')">${ICONS.printer}</button>
+        </div>
+      </div>`).join('');
+  }
 }
 
 // Render pagination
@@ -141,12 +182,10 @@ document.getElementById('searchInput').addEventListener('input', e => {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(() => { state.search = e.target.value; state.page = 1; loadApplications(); }, 400);
 });
-['filterGender', 'filterCourse', 'filterCert', 'filterActivity', 'sortOrder'].forEach(id => {
+const filterMap = { filterGender: 'gender', filterCourse: 'course', filterCert: 'cert', filterActivity: 'activity', sortOrder: 'sort' };
+Object.entries(filterMap).forEach(([id, key]) => {
   document.getElementById(id).addEventListener('change', e => {
-    const map = { filterGender: 'gender', filterCourse: 'course', filterCert: 'cert', filterActivity: 'activity', sortOrder: 'sort' };
-    state[map[id]] = e.target.value;
-    state.page = 1;
-    loadApplications();
+    state[key] = e.target.value; state.page = 1; loadApplications();
   });
 });
 

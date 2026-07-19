@@ -47,6 +47,15 @@
     .header-bar { background: var(--olive-dark); padding: 1rem 2rem; display: flex; align-items: center; gap: 10px; }
     .header-bar span { color: var(--white); font-weight: 700; font-size: 1rem; }
     .header-bar em { color: var(--gold); font-style: normal; }
+    @media (max-width: 600px) {
+      .thankyou-card { padding: 2rem 1.25rem; border-radius: 14px; }
+      .thankyou-card h1 { font-size: 1.4rem; }
+      .app-id-box .app-id { font-size: 1.2rem; letter-spacing: 1px; }
+      .action-btns { flex-direction: column; }
+      .btn-home, .btn-print { width: 100%; text-align: center; }
+      .header-bar { padding: 0.875rem 1.25rem; }
+      .thankyou-wrap { padding: 1rem; align-items: flex-start; padding-top: 2rem; }
+    }
   </style>
 </head>
 <body>

@@ -109,8 +109,24 @@ select { cursor: pointer; }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 640px) {
+  .page-header { padding: 4rem 1.25rem 2rem; }
+  .form-section { padding: 1.5rem 0.75rem; }
   .form-grid { grid-template-columns: 1fr; }
   .form-grid.cols-3 { grid-template-columns: 1fr 1fr; }
   .form-body { padding: 1.25rem; }
-  .form-nav { padding: 1rem 1.25rem; }
+  .form-progress { padding: 1rem 1.25rem; }
+  .form-nav {
+    padding: 1rem 1.25rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .step-indicator { order: -1; width: 100%; text-align: center; }
+  .btn-prev, .btn-next, .btn-submit { flex: 1; justify-content: center; min-width: 0; }
+  .radio-group { gap: 0.5rem; }
+  .radio-option { padding: 7px 10px; font-size: 0.82rem; }
+}
+
+@media (max-width: 400px) {
+  .form-grid.cols-3 { grid-template-columns: 1fr; }
+  .btn-prev, .btn-next, .btn-submit { padding: 11px 16px; font-size: 0.85rem; }
 }
