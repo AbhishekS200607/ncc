@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard | NCC Enrollment Portal</title>
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+
+<div class="dashboard-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="emblem">🎖️</div>
+      <h2>NCC Admin <span>Enrollment Portal</span></h2>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" data-page="dashboard">
+        <span class="icon">📊</span> Dashboard
+      </div>
+      <div class="nav-item" data-page="applications">
+        <span class="icon">📋</span> Applications
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle">☰</button>
+        <h1 id="pageTitle">Dashboard</h1>
+      </div>
+      <div class="topbar-right">
+        <div class="admin-badge">
+          <div class="avatar" id="adminAvatar">A</div>
+          <span id="adminName">Admin</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- PAGE CONTENT -->
+    <div class="page-content">
+
+      <!-- DASHBOARD PAGE -->
+      <div class="page-section active" id="page-dashboard">
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-card"><div class="stat-icon">📋</div><div class="stat-info"><div class="num" id="statTotal">—</div><div class="label">Total Applications</div></div></div>
+          <div class="stat-card blue"><div class="stat-icon">👨</div><div class="stat-info"><div class="num" id="statMale">—</div><div class="label">Male Applicants</div></div></div>
+          <div class="stat-card gold"><div class="stat-icon">👩</div><div class="stat-info"><div class="num" id="statFemale">—</div><div class="label">Female Applicants</div></div></div>
+          <div class="stat-card purple"><div class="stat-icon">🎖️</div><div class="stat-info"><div class="num" id="statCerts">—</div><div class="label">Certificate Holders</div></div></div>
+          <div class="stat-card green"><div class="stat-icon">📅</div><div class="stat-info"><div class="num" id="statToday">—</div><div class="label">Applications Today</div></div></div>
+        </div>
+        <div style="background:var(--white);border-radius:var(--radius);padding:2rem;box-shadow:var(--shadow);text-align:center;">
+          <div style="font-size:3rem;margin-bottom:1rem;">📊</div>
+          <h3 style="color:var(--olive-dark);margin-bottom:0.5rem;">Welcome to NCC Admin Dashboard</h3>
+          <p style="color:var(--gray);font-size:0.9rem;">Use the sidebar to navigate. Go to <strong>Applications</strong> to view and manage all submissions.</p>
+        </div>
+      </div>
+
+      <!-- APPLICATIONS PAGE -->
+      <div class="page-section" id="page-applications">
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Search by name or WhatsApp..." />
+          </div>
+          <select class="filter-select" id="filterGender">
+            <option value="">All Genders</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+          <select class="filter-select" id="filterCourse">
+            <option value="">All Departments</option>
+            <option value="Electrical and Electronic Engineering">Electrical &amp; Electronic Engg.</option>
+            <option value="Automobile Engineering">Automobile Engg.</option>
+            <option value="Civil Engineering">Civil Engg.</option>
+            <option value="Mechanical Engineering">Mechanical Engg.</option>
+            <option value="Electronics Engineering">Electronics Engg.</option>
+            <option value="Computer Science Engineering">Computer Science Engg.</option>
+          </select>
+          <select class="filter-select" id="filterCert">
+            <option value="">All Certificates</option>
+            <option value="A Certificate">A Certificate</option>
+            <option value="B Certificate">B Certificate</option>
+            <option value="NIL">NIL</option>
+          </select>
+          <select class="filter-select" id="filterActivity">
+            <option value="">All Activities</option>
+            <option value="SPC">SPC</option>
+            <option value="Scouts & Guides">Scouts &amp; Guides</option>
+            <option value="Red Cross">Red Cross</option>
+            <option value="Other">Other</option>
+            <option value="NIL">NIL</option>
+          </select>
+          <select class="filter-select" id="sortOrder">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="alpha">Alphabetical</option>
+          </select>
+          <div class="toolbar-actions">
+            <button class="btn-icon gold" id="exportCsvBtn">⬇️ CSV</button>
+            <button class="btn-icon primary" id="exportXlsxBtn">⬇️ Excel</button>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-card">
+          <div class="table-wrap">
+            <table id="applicationsTable">
+              <thead>
+                <tr>
+                  <th>App ID</th>
+                  <th>Name</th>
+                  <th>WhatsApp</th>
+                  <th>Gender</th>
+                  <th>Course</th>
+                  <th>Height</th>
+                  <th>Weight</th>
+                  <th>10th %</th>
+                  <th>12th %</th>
+                  <th>NCC Cert</th>
+                  <th>School Activity</th>
+                  <th>Parent Service</th>
+                  <th>Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody">
+                <tr><td colspan="14"><div class="empty-state"><div class="icon">⏳</div><h3>Loading...</h3></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination" id="pagination"></div>
+        </div>
+
+      </div><!-- /applications page -->
+
+    </div><!-- /page-content -->
+  </div><!-- /main-content -->
+</div><!-- /dashboard-layout -->
+
+<!-- VIEW MODAL -->
+<div class="modal-overlay" id="viewModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Application Details</h3>
+      <button class="modal-close" data-modal="viewModal">✕</button>
+    </div>
+    <div class="modal-body" id="viewModalBody"></div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Edit Application</h3>
+      <button class="modal-close" data-modal="editModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="editForm">
+        <input type="hidden" id="editId" />
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div><label style="font-size:0.8rem;font-weight:600;color:var(--olive-dark);display:block;margin-bottom:4px;">Full Name</label><input type="text" id="editName" style="width:100%;padding:9px 12px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:0.875rem;" /></div>
+          <div><label style="font-size:0.8rem;font-weight:600;color:var(--olive-dark);display:block;margin-bottom:4px;">WhatsApp</label><input type="text" id="editWhatsapp" style="width:100%;padding:9px 12px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:0.875rem;" /></div>
+          <div><label style="font-size:0.8rem;font-weight:600;color:var(--olive-dark);display:block;margin-bottom:4px;">Department</label><select id="editCourse" style="width:100%;padding:9px 12px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:0.875rem;background:var(--white);"><option value="Electrical and Electronic Engineering">Electrical and Electronic Engineering</option><option value="Automobile Engineering">Automobile Engineering</option><option value="Civil Engineering">Civil Engineering</option><option value="Mechanical Engineering">Mechanical Engineering</option><option value="Electronics Engineering">Electronics Engineering</option><option value="Computer Science Engineering">Computer Science Engineering</option></select></div>
+          <div><label style="font-size:0.8rem;font-weight:600;color:var(--olive-dark);display:block;margin-bottom:4px;">Height (cm)</label><input type="number" id="editHeight" style="width:100%;padding:9px 12px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:0.875rem;" /></div>
+          <div><label style="font-size:0.8rem;font-weight:600;color:var(--olive-dark);display:block;margin-bottom:4px;">Weight (kg)</label><input type="number" id="editWeight" style="width:100%;padding:9px 12px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:0.875rem;" /></div>
+          <div><label style="font-size:0.8rem;font-weight:600;color:var(--olive-dark);display:block;margin-bottom:4px;">10th %</label><input type="number" id="editP10" style="width:100%;padding:9px 12px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:0.875rem;" /></div>
+          <div><label style="font-size:0.8rem;font-weight:600;color:var(--olive-dark);display:block;margin-bottom:4px;">12th %</label><input type="number" id="editP12" style="width:100%;padding:9px 12px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:0.875rem;" /></div>
+        </div>
+        <div style="margin-top:1.25rem;display:flex;justify-content:flex-end;gap:0.75rem;">
+          <button type="button" class="btn-cancel" data-modal="editModal">Cancel</button>
+          <button type="submit" style="padding:10px 24px;border-radius:8px;border:none;background:var(--olive);color:var(--white);font-weight:700;cursor:pointer;">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="confirm-dialog">
+    <div class="icon">🗑️</div>
+    <h3>Delete Application?</h3>
+    <p>This action cannot be undone. The application will be permanently removed.</p>
+    <div class="confirm-btns">
+      <button class="btn-cancel" data-modal="deleteModal">Cancel</button>
+      <button class="btn-confirm-delete" id="confirmDeleteBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- SPINNER -->
+<div class="spinner-overlay" id="spinner" style="display:none;"><div class="spinner"></div></div>
+
+<script src="js/auth.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

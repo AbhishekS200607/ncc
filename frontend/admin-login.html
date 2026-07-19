@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login | NCC Enrollment Portal</title>
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="emblem">🎖️</div>
+      <h1>NCC Admin Portal</h1>
+      <p>Authorized personnel only</p>
+    </div>
+
+    <div class="login-error" id="loginError"></div>
+
+    <form class="login-form" id="loginForm" novalidate>
+      <div>
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="Enter username" autocomplete="username" required />
+      </div>
+      <div>
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter password" autocomplete="current-password" required />
+      </div>
+      <button type="submit" class="login-btn" id="loginBtn">
+        <span id="loginBtnText">Login to Dashboard</span>
+      </button>
+    </form>
+
+    <p style="text-align:center;margin-top:1.5rem;font-size:0.8rem;color:var(--gray);">
+      <a href="index.html" style="color:var(--olive);font-weight:600;">← Back to Portal</a>
+    </p>
+  </div>
+</div>
+
+<script src="js/auth.js"></script>
+</body>
+</html>
