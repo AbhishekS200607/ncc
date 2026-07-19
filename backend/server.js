@@ -9,6 +9,9 @@ const logger = require('./utils/logger');
 
 const app = express();
 
+// Trust Vercel/proxy headers for rate limiting
+app.set('trust proxy', 1);
+
 // Security
 app.use(helmet());
 const allowedOrigins = [
