@@ -61,6 +61,13 @@
     .status-msg.rejected   { background: #fef2f2; color: #991b1b; }
     .back-link { display: block; text-align: center; margin-top: 1.5rem; color: var(--olive); font-size: 0.875rem; font-weight: 600; text-decoration: none; }
     .back-link:hover { text-decoration: underline; }
+    .header-icon svg { width: 24px; height: 24px; color: var(--gold); }
+    .status-icon { display:flex; align-items:center; justify-content:center; }
+    .status-icon.pending svg    { color: #854d0e; }
+    .status-icon.shortlisted svg { color: #1d4ed8; }
+    .status-icon.selected svg   { color: #15803d; }
+    .status-icon.rejected svg   { color: #dc2626; }
+    #titleIcon svg { width: 26px; height: 26px; vertical-align: middle; color: var(--olive-dark); }
     @media (max-width: 480px) {
       .card { padding: 1.75rem 1.25rem; border-radius: 14px; }
       .input-group { flex-direction: column; }
@@ -71,13 +78,13 @@
 <body>
 
 <div class="header-bar">
-  <div style="font-size:1.5rem;">🎖️</div>
+  <div class="header-icon" id="headerIcon"></div>
   <span>NCC <em>Enrollment Portal</em></span>
 </div>
 
 <div class="wrap">
   <div class="card">
-    <h1>🔍 Check Application Status</h1>
+    <h1><span id="titleIcon" style="vertical-align:middle;margin-right:6px;"></span>Check Application Status</h1>
     <p class="sub">Enter your Application ID to check your enrollment status</p>
 
     <div class="input-group">
@@ -105,16 +112,17 @@
   </div>
 </div>
 
+<script src="js/icons.js"></script>
 <script>
   const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:5000/api'
     : '/api';
 
   const statusConfig = {
-    Pending:     { icon: '⏳', msg: 'Your application is under review by the NCC Unit. You will be contacted on WhatsApp if shortlisted.' },
-    Shortlisted: { icon: '📋', msg: 'Congratulations! You have been shortlisted. Please wait for further instructions regarding the physical and written tests.' },
-    Selected:    { icon: '🎖️', msg: 'Congratulations! You have been selected for NCC enrollment. The unit will contact you with joining details.' },
-    Rejected:    { icon: '❌', msg: 'We regret to inform you that your application was not selected this time. You may apply again in the next enrollment cycle.' }
+    Pending:     { iconKey: 'clock',       msg: 'Your application is under review by the NCC Unit. You will be contacted on WhatsApp if shortlisted.' },
+    Shortlisted: { iconKey: 'clipboard',   msg: 'Congratulations! You have been shortlisted. Please wait for further instructions regarding the physical and written tests.' },
+    Selected:    { iconKey: 'checkcircle', msg: 'Congratulations! You have been selected for NCC enrollment. The unit will contact you with joining details.' },
+    Rejected:    { iconKey: 'close',       msg: 'We regret to inform you that your application was not selected this time. You may apply again in the next enrollment cycle.' }
   };
 
   async function checkStatus() {
@@ -157,7 +165,10 @@
       document.getElementById('resultHeader').className = `result-header ${cls}`;
       document.getElementById('statusLabel').className = `status-label ${cls}`;
       document.getElementById('statusLabel').textContent = status;
-      document.getElementById('statusIcon').textContent = cfg.icon;
+      const iconEl = document.getElementById('statusIcon');
+      iconEl.innerHTML = ICONS[cfg.iconKey];
+      iconEl.style.cssText = 'width:32px;height:32px;';
+      iconEl.className = `status-icon ${cls}`;
       document.getElementById('resName').textContent = r.name;
       document.getElementById('resAppId').textContent = r.application_id;
       document.getElementById('resCourse').textContent = r.course;
@@ -174,6 +185,9 @@
       btn.textContent = 'Check';
     }
   }
+
+  document.getElementById('headerIcon').innerHTML = ICONS.medal;
+  document.getElementById('titleIcon').innerHTML = ICONS.search;
 
   // Pre-fill from URL param
   const params = new URLSearchParams(window.location.search);

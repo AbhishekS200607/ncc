@@ -10,7 +10,7 @@
 <div class="login-page">
   <div class="login-card">
     <div class="login-logo">
-      <div class="emblem">🎖️</div>
+      <div class="emblem" id="loginEmblem"></div>
       <h1>NCC Admin Portal</h1>
       <p>Authorized personnel only</p>
     </div>
@@ -37,6 +37,10 @@
   </div>
 </div>
 
+<script src="js/icons.js"></script>
 <script src="js/auth.js"></script>
+<script>
+  document.getElementById('loginEmblem').innerHTML = ICONS.medal;
+</script>
 </body>
 </html>
