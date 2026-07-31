@@ -57,6 +57,8 @@
           <div class="stat-card gold"><div class="stat-icon" id="statIconFemale"></div><div class="stat-info"><div class="num" id="statFemale">—</div><div class="label">Female Applicants</div></div></div>
           <div class="stat-card purple"><div class="stat-icon" id="statIconCerts"></div><div class="stat-info"><div class="num" id="statCerts">—</div><div class="label">Certificate Holders</div></div></div>
           <div class="stat-card green"><div class="stat-icon" id="statIconToday"></div><div class="stat-info"><div class="num" id="statToday">—</div><div class="label">Applications Today</div></div></div>
+          <div class="stat-card orange"><div class="stat-icon" id="statIconShortlisted"></div><div class="stat-info"><div class="num" id="statShortlisted">—</div><div class="label">Shortlisted</div></div></div>
+          <div class="stat-card red"><div class="stat-icon" id="statIconSelected"></div><div class="stat-info"><div class="num" id="statSelected">—</div><div class="label">Selected</div></div></div>
         </div>
         <div style="background:var(--white);border-radius:var(--radius);padding:2rem;box-shadow:var(--shadow);text-align:center;">
           <div style="font-size:3rem;margin-bottom:1rem;" id="welcomeIcon"></div>
@@ -140,6 +142,7 @@
                   <th>NCC Cert</th>
                   <th>School Activity</th>
                   <th>Parent Service</th>
+                  <th>Status</th>
                   <th>Date</th>
                   <th>Actions</th>
                 </tr>
@@ -237,6 +240,8 @@
   _si('statIconFemale',  'userfemale','1.8rem');
   _si('statIconCerts',   'award',     '1.8rem');
   _si('statIconToday',   'calendar',  '1.8rem');
+  _si('statIconShortlisted', 'checkcircle', '1.8rem');
+  _si('statIconSelected',    'award',      '1.8rem');
   _si('welcomeIcon',     'barchart',  '3rem');
   _si('searchIcon',      'search',    '1rem');
   _si('csvIcon',         'download',  '1rem');

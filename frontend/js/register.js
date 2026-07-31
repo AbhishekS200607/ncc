@@ -1,4 +1,4 @@
-// Registration form — multi-step with validation
+  // Registration form — multi-step with validation
 
 const TOTAL_STEPS = 4;
 let currentStep = 1;

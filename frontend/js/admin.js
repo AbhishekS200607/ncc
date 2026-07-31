@@ -78,6 +78,8 @@ async function loadStats() {
     document.getElementById('statFemale').textContent = data.female;
     document.getElementById('statCerts').textContent = data.certificate_holders;
     document.getElementById('statToday').textContent = data.today;
+    document.getElementById('statShortlisted').textContent = data.shortlisted;
+    document.getElementById('statSelected').textContent = data.selected;
   } catch { showToast('Failed to load statistics', 'error'); }
 }
 
@@ -104,6 +106,33 @@ async function loadApplications() {
   finally { hideSpinner(); }
 }
 
+function whatsappUrl(phone, name, status, appId) {
+  const msgs = {
+    Pending:     `Hello ${name}, your NCC enrollment application (ID: ${appId}) has been received and is under review. We will contact you soon.`,
+    Shortlisted: `Hello ${name}, congratulations! Your NCC enrollment application (ID: ${appId}) has been shortlisted. Please wait for further instructions regarding the selection process.`,
+    Selected:    `Hello ${name}, congratulations! You have been SELECTED for NCC enrollment (ID: ${appId}). Please contact the NCC Unit for joining details.`,
+    Rejected:    `Hello ${name}, we regret to inform you that your NCC enrollment application (ID: ${appId}) was not selected this time. You may apply again in the next cycle.`
+  };
+  const msg = encodeURIComponent(msgs[status] || msgs.Pending);
+  return `https://wa.me/91${phone}?text=${msg}`;
+}
+
+function statusBadge(status) {
+  const map = { Pending: 'badge-pending', Shortlisted: 'badge-shortlisted', Selected: 'badge-selected', Rejected: 'badge-rejected' };
+  return `<span class="badge ${map[status] || 'badge-pending'}">${status}</span>`;
+}
+
+async function changeStatus(id, newStatus) {
+  try {
+    const res = await fetch(`${API_BASE}/admin/application/${id}/status`, {
+      method: 'PATCH', headers: authHeaders(), body: JSON.stringify({ status: newStatus })
+    });
+    const data = await res.json();
+    if (data.success) { showToast(`Status updated to ${newStatus}`); loadApplications(); loadStats(); }
+    else showToast(data.message || 'Update failed', 'error');
+  } catch { showToast('Update failed', 'error'); }
+}
+
 // Render table + mobile cards
 function renderTable(rows) {
   const mobileCards = document.getElementById('mobileCards');
@@ -126,11 +155,17 @@ function renderTable(rows) {
       <td><span class="badge ${r.ncc_certificate === 'A Certificate' ? 'cert-a' : r.ncc_certificate === 'B Certificate' ? 'cert-b' : 'cert-nil'}">${r.ncc_certificate}</span></td>
       <td>${escHtml(r.school_activity)}</td>
       <td>${escHtml(r.parent_service)}</td>
+      <td>
+        <select class="status-select" onchange="changeStatus('${r.id}', this.value)">
+          ${['Pending','Shortlisted','Selected','Rejected'].map(s => `<option value="${s}" ${r.status===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </td>
       <td style="white-space:nowrap;font-size:0.8rem;">${new Date(r.created_at).toLocaleDateString('en-IN')}</td>
       <td>
         <div class="action-btns">
           <button class="action-btn view" title="View" onclick="viewApplication('${r.id}')">${ICONS.eye}</button>
           <button class="action-btn edit" title="Edit" onclick="editApplication('${r.id}')">${ICONS.edit}</button>
+          <button class="action-btn whatsapp" title="WhatsApp" onclick="window.open('${whatsappUrl(r.whatsapp, r.name, r.status, r.application_id)}','_blank')">${ICONS.whatsapp}</button>
           <button class="action-btn delete" title="Delete" onclick="confirmDelete('${r.id}')">${ICONS.trash}</button>
           <button class="action-btn print" title="Print" onclick="printApplication('${r.id}')">${ICONS.printer}</button>
         </div>
@@ -150,10 +185,12 @@ function renderTable(rows) {
         <div class="app-card-row"><span>WhatsApp</span><span>${escHtml(r.whatsapp)}</span></div>
         <div class="app-card-row"><span>NCC Cert</span><span><span class="badge ${r.ncc_certificate === 'A Certificate' ? 'cert-a' : r.ncc_certificate === 'B Certificate' ? 'cert-b' : 'cert-nil'}">${r.ncc_certificate}</span></span></div>
         <div class="app-card-row"><span>Height / Weight</span><span>${r.height} cm / ${r.weight} kg</span></div>
+        <div class="app-card-row"><span>Status</span><span>${statusBadge(r.status)}</span></div>
         <div class="app-card-row"><span>Date</span><span>${new Date(r.created_at).toLocaleDateString('en-IN')}</span></div>
         <div class="app-card-actions">
           <button class="action-btn view" title="View" onclick="viewApplication('${r.id}')">${ICONS.eye}</button>
           <button class="action-btn edit" title="Edit" onclick="editApplication('${r.id}')">${ICONS.edit}</button>
+          <button class="action-btn whatsapp" title="WhatsApp" onclick="window.open('${whatsappUrl(r.whatsapp, r.name, r.status, r.application_id)}','_blank')">${ICONS.whatsapp}</button>
           <button class="action-btn delete" title="Delete" onclick="confirmDelete('${r.id}')">${ICONS.trash}</button>
           <button class="action-btn print" title="Print" onclick="printApplication('${r.id}')">${ICONS.printer}</button>
         </div>
@@ -199,7 +236,7 @@ async function viewApplication(id) {
       <div class="app-id-badge"><span>Application ID</span><strong>${r.application_id}</strong></div>
       <div class="detail-grid">
         <div class="detail-item"><label>Full Name</label><p>${escHtml(r.name)}</p></div>
-        <div class="detail-item"><label>WhatsApp</label><p>${escHtml(r.whatsapp)}</p></div>
+        <div class="detail-item"><label>WhatsApp</label><p>${escHtml(r.whatsapp)} <a href="${whatsappUrl(r.whatsapp, r.name, r.status, r.application_id)}" target="_blank" style="margin-left:8px;background:#25d366;color:#fff;padding:3px 10px;border-radius:6px;font-size:0.75rem;font-weight:700;text-decoration:none;">💬 Message</a></p></div>
         <div class="detail-item"><label>Gender</label><p>${r.gender}</p></div>
         <div class="detail-item"><label>Course</label><p>${escHtml(r.course)}</p></div>
         <div class="detail-item"><label>Height</label><p>${r.height} cm</p></div>
@@ -211,6 +248,11 @@ async function viewApplication(id) {
         <div class="detail-item"><label>Parent Service</label><p>${r.parent_service}</p></div>
         <div class="detail-item"><label>Guardian Name</label><p>${escHtml(r.guardian_name)}</p></div>
         <div class="detail-item"><label>Guardian Phone</label><p>${escHtml(r.guardian_phone)}</p></div>
+        <div class="detail-item"><label>Status</label><p>${statusBadge(r.status)}
+          <select class="status-select" style="margin-left:8px;" onchange="changeStatus('${r.id}', this.value);document.getElementById('viewModal').classList.remove('open');">
+            ${['Pending','Shortlisted','Selected','Rejected'].map(s => `<option value="${s}" ${r.status===s?'selected':''}>${s}</option>`).join('')}
+          </select>
+        </p></div>
         <div class="detail-item"><label>Date Submitted</label><p>${new Date(r.created_at).toLocaleString('en-IN')}</p></div>
         ${r.extracurricular ? `<div class="detail-item full"><label>Extracurricular</label><p>${escHtml(r.extracurricular)}</p></div>` : ''}
         ${r.achievements ? `<div class="detail-item full"><label>Achievements</label><p>${escHtml(r.achievements)}</p></div>` : ''}

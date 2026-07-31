@@ -65,6 +65,27 @@ const getApplicationById = async (id) => {
   return data;
 };
 
+const getApplicationByAppId = async (application_id) => {
+  const { data, error } = await supabase
+    .from('applications')
+    .select('application_id, name, course, gender, status, created_at')
+    .eq('application_id', application_id)
+    .single();
+  if (error || !data) return null;
+  return data;
+};
+
+const updateStatus = async (id, status) => {
+  const { data, error } = await supabase
+    .from('applications')
+    .update({ status })
+    .eq('id', id)
+    .select('id, status')
+    .single();
+  if (error) throw error;
+  return data;
+};
+
 const updateApplication = async (id, updates) => {
   const { data, error } = await supabase
     .from('applications')
@@ -84,12 +105,15 @@ const deleteApplication = async (id) => {
 const getStatistics = async () => {
   const today = new Date().toISOString().split('T')[0];
 
-  const [total, male, female, certs, todayApps] = await Promise.all([
+  const [total, male, female, certs, todayApps, shortlisted, selected, rejected] = await Promise.all([
     supabase.from('applications').select('id', { count: 'exact', head: true }),
     supabase.from('applications').select('id', { count: 'exact', head: true }).eq('gender', 'Male'),
     supabase.from('applications').select('id', { count: 'exact', head: true }).eq('gender', 'Female'),
     supabase.from('applications').select('id', { count: 'exact', head: true }).neq('ncc_certificate', 'NIL'),
-    supabase.from('applications').select('id', { count: 'exact', head: true }).gte('created_at', `${today}T00:00:00`)
+    supabase.from('applications').select('id', { count: 'exact', head: true }).gte('created_at', `${today}T00:00:00`),
+    supabase.from('applications').select('id', { count: 'exact', head: true }).eq('status', 'Shortlisted'),
+    supabase.from('applications').select('id', { count: 'exact', head: true }).eq('status', 'Selected'),
+    supabase.from('applications').select('id', { count: 'exact', head: true }).eq('status', 'Rejected')
   ]);
 
   return {
@@ -97,7 +121,10 @@ const getStatistics = async () => {
     male: male.count || 0,
     female: female.count || 0,
     certificate_holders: certs.count || 0,
-    today: todayApps.count || 0
+    today: todayApps.count || 0,
+    shortlisted: shortlisted.count || 0,
+    selected: selected.count || 0,
+    rejected: rejected.count || 0
   };
 };
 
@@ -110,4 +137,4 @@ const getAllForExport = async () => {
   return data;
 };
 
-module.exports = { createApplication, getApplications, getApplicationById, updateApplication, deleteApplication, getStatistics, getAllForExport };
+module.exports = { createApplication, getApplications, getApplicationById, getApplicationByAppId, updateStatus, updateApplication, deleteApplication, getStatistics, getAllForExport };

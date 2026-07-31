@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS applications (
   percentage_12 DECIMAL(5,2) NOT NULL CHECK (percentage_12 BETWEEN 0 AND 100),
   school_activity VARCHAR(50) NOT NULL CHECK (school_activity IN ('SPC', 'Scouts & Guides', 'Red Cross', 'Other', 'NIL')),
   parent_service VARCHAR(30) NOT NULL CHECK (parent_service IN ('Currently Serving', 'Ex-Service', 'No')),
+  status VARCHAR(20) NOT NULL DEFAULT 'Pending' CHECK (status IN ('Pending', 'Shortlisted', 'Selected', 'Rejected')),
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -34,6 +35,9 @@ CREATE TABLE IF NOT EXISTS admins (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Unique constraint on whatsapp to prevent duplicate registrations
+ALTER TABLE public.applications ADD CONSTRAINT applications_whatsapp_unique UNIQUE (whatsapp);
+
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_applications_created_at ON applications(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_applications_gender ON applications(gender);
@@ -41,4 +45,4 @@ CREATE INDEX IF NOT EXISTS idx_applications_ncc_certificate ON applications(ncc_
 CREATE INDEX IF NOT EXISTS idx_applications_school_activity ON applications(school_activity);
 CREATE INDEX IF NOT EXISTS idx_applications_name ON applications(name);
 CREATE INDEX IF NOT EXISTS idx_applications_whatsapp ON applications(whatsapp);
-CREATE INDEX IF NOT EXISTS idx_applications_application_id ON applications(application_id);
+CREATE INDEX IF NOT EXISTS idx_applications_status ON applications(status);

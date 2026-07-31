@@ -1,0 +1,180 @@
+{
+  "info": {
+    "name": "NCC Enrollment Portal",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base", "value": "http://localhost:5000" },
+    { "key": "token", "value": "" },
+    { "key": "appUUID", "value": "" },
+    { "key": "appId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Health Check",
+      "request": {
+        "method": "GET",
+        "url": "{{base}}/health"
+      }
+    },
+    {
+      "name": "2. Admin Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const d = pm.response.json();",
+              "if (d.success) {",
+              "  pm.collectionVariables.set('token', d.data.token);",
+              "  console.log('✅ Token saved automatically');",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base}}/api/admin/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"Admin@NCC2024\"\n}"
+        }
+      }
+    },
+    {
+      "name": "3. Register Application",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const d = pm.response.json();",
+              "if (d.success) {",
+              "  pm.collectionVariables.set('appUUID', d.data.id);",
+              "  pm.collectionVariables.set('appId', d.data.application_id);",
+              "  console.log('✅ App ID saved: ' + d.data.application_id);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base}}/api/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Test Student\",\n  \"whatsapp\": \"9111111111\",\n  \"gender\": \"Male\",\n  \"course\": \"Civil Engineering\",\n  \"height\": 170,\n  \"weight\": 65,\n  \"percentage_10\": 85,\n  \"percentage_12\": 80,\n  \"school_activity\": \"NIL\",\n  \"parent_service\": \"No\",\n  \"ncc_certificate\": \"NIL\",\n  \"guardian_name\": \"Test Guardian\",\n  \"guardian_phone\": \"9876543211\",\n  \"extracurricular\": \"Football\",\n  \"achievements\": \"District level player\"\n}"
+        }
+      }
+    },
+    {
+      "name": "4. Check Status (Public)",
+      "request": {
+        "method": "GET",
+        "url": "{{base}}/api/status/{{appId}}"
+      }
+    },
+    {
+      "name": "5. Get Statistics",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{base}}/api/admin/statistics"
+      }
+    },
+    {
+      "name": "6. Get All Applications",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": {
+          "raw": "{{base}}/api/admin/applications?page=1&limit=15&sort=newest",
+          "host": ["{{base}}"],
+          "path": ["api", "admin", "applications"],
+          "query": [
+            { "key": "page", "value": "1" },
+            { "key": "limit", "value": "15" },
+            { "key": "sort", "value": "newest" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "7. Get Single Application",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{base}}/api/admin/application/{{appUUID}}"
+      }
+    },
+    {
+      "name": "8. Update Status → Shortlisted",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": "{{base}}/api/admin/application/{{appUUID}}/status",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"Shortlisted\"\n}"
+        }
+      }
+    },
+    {
+      "name": "9. Update Application",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": "{{base}}/api/admin/application/{{appUUID}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Updated Student Name\",\n  \"height\": 175,\n  \"weight\": 68,\n  \"percentage_10\": 90,\n  \"percentage_12\": 88\n}"
+        }
+      }
+    },
+    {
+      "name": "10. Export CSV",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{base}}/api/admin/applications/export?format=csv"
+      }
+    },
+    {
+      "name": "11. Export Excel",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{base}}/api/admin/applications/export?format=xlsx"
+      }
+    },
+    {
+      "name": "12. Delete Application",
+      "request": {
+        "method": "DELETE",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{base}}/api/admin/application/{{appUUID}}"
+      }
+    },
+    {
+      "name": "13. Duplicate WhatsApp Test",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base}}/api/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Another Student\",\n  \"whatsapp\": \"9111111111\",\n  \"gender\": \"Female\",\n  \"course\": \"Civil Engineering\",\n  \"height\": 160,\n  \"weight\": 55,\n  \"percentage_10\": 75,\n  \"percentage_12\": 72,\n  \"school_activity\": \"NIL\",\n  \"parent_service\": \"No\",\n  \"ncc_certificate\": \"NIL\",\n  \"guardian_name\": \"Another Guardian\",\n  \"guardian_phone\": \"9876543212\"\n}"
+        }
+      }
+    }
+  ]
+}

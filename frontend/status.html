@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Check Application Status | NCC Enrollment</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body { min-height: 100vh; display: flex; flex-direction: column; background: var(--off-white); }
+    .header-bar { background: var(--olive-dark); padding: 1rem 2rem; display: flex; align-items: center; gap: 10px; }
+    .header-bar span { color: var(--white); font-weight: 700; font-size: 1rem; }
+    .header-bar em { color: var(--gold); font-style: normal; }
+    .wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+    .card {
+      background: var(--white); border-radius: 20px; padding: 2.5rem;
+      max-width: 480px; width: 100%; box-shadow: 0 8px 40px rgba(0,0,0,0.1);
+      animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes popIn { from { opacity:0; transform:scale(0.9); } to { opacity:1; transform:scale(1); } }
+    .card h1 { font-size: 1.5rem; font-weight: 800; color: var(--olive-dark); margin-bottom: 0.4rem; text-align: center; }
+    .card .sub { color: var(--gray); font-size: 0.875rem; text-align: center; margin-bottom: 2rem; }
+    .input-group { display: flex; gap: 0.75rem; margin-bottom: 1rem; }
+    .input-group input {
+      flex: 1; padding: 12px 14px; border: 1.5px solid var(--gray-light);
+      border-radius: 10px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;
+      transition: border-color 0.2s;
+    }
+    .input-group input:focus { outline: none; border-color: var(--olive); box-shadow: 0 0 0 3px rgba(74,94,35,0.1); }
+    .input-group input.error { border-color: #dc2626; }
+    .btn-check {
+      padding: 12px 20px; background: var(--olive); color: var(--white);
+      border: none; border-radius: 10px; font-weight: 700; font-size: 0.9rem;
+      cursor: pointer; transition: background 0.2s; white-space: nowrap;
+    }
+    .btn-check:hover { background: var(--olive-dark); }
+    .btn-check:disabled { opacity: 0.6; cursor: not-allowed; }
+    .error-msg { color: #dc2626; font-size: 0.82rem; margin-bottom: 1rem; display: none; }
+    .error-msg.show { display: block; }
+    .result { display: none; border-radius: 14px; overflow: hidden; border: 1.5px solid var(--gray-light); }
+    .result.show { display: block; }
+    .result-header { padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .result-header.pending   { background: #fef9c3; }
+    .result-header.shortlisted { background: #dbeafe; }
+    .result-header.selected  { background: #dcfce7; }
+    .result-header.rejected  { background: #fee2e2; }
+    .status-label { font-size: 1rem; font-weight: 800; }
+    .status-label.pending    { color: #854d0e; }
+    .status-label.shortlisted { color: #1d4ed8; }
+    .status-label.selected   { color: #15803d; }
+    .status-label.rejected   { color: #dc2626; }
+    .status-icon { font-size: 2rem; }
+    .result-body { padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 0.75rem; }
+    .result-row { display: flex; justify-content: space-between; font-size: 0.875rem; border-bottom: 1px solid var(--gray-light); padding-bottom: 0.6rem; }
+    .result-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .result-row span:first-child { color: var(--gray); }
+    .result-row span:last-child { font-weight: 600; color: var(--black); }
+    .status-msg { padding: 0.875rem 1.5rem; font-size: 0.82rem; line-height: 1.6; border-top: 1px solid var(--gray-light); }
+    .status-msg.pending    { background: #fffbeb; color: #92400e; }
+    .status-msg.shortlisted { background: #eff6ff; color: #1e40af; }
+    .status-msg.selected   { background: #f0fdf4; color: #166534; }
+    .status-msg.rejected   { background: #fef2f2; color: #991b1b; }
+    .back-link { display: block; text-align: center; margin-top: 1.5rem; color: var(--olive); font-size: 0.875rem; font-weight: 600; text-decoration: none; }
+    .back-link:hover { text-decoration: underline; }
+    @media (max-width: 480px) {
+      .card { padding: 1.75rem 1.25rem; border-radius: 14px; }
+      .input-group { flex-direction: column; }
+      .btn-check { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header-bar">
+  <div style="font-size:1.5rem;">🎖️</div>
+  <span>NCC <em>Enrollment Portal</em></span>
+</div>
+
+<div class="wrap">
+  <div class="card">
+    <h1>🔍 Check Application Status</h1>
+    <p class="sub">Enter your Application ID to check your enrollment status</p>
+
+    <div class="input-group">
+      <input type="text" id="appIdInput" placeholder="e.g. NCC-2024-XXXXX" maxlength="20" />
+      <button class="btn-check" id="checkBtn" onclick="checkStatus()">Check</button>
+    </div>
+    <div class="error-msg" id="errorMsg"></div>
+
+    <div class="result" id="result">
+      <div class="result-header" id="resultHeader">
+        <div class="status-label" id="statusLabel"></div>
+        <div class="status-icon" id="statusIcon"></div>
+      </div>
+      <div class="result-body">
+        <div class="result-row"><span>Applicant Name</span><span id="resName"></span></div>
+        <div class="result-row"><span>Application ID</span><span id="resAppId"></span></div>
+        <div class="result-row"><span>Course</span><span id="resCourse"></span></div>
+        <div class="result-row"><span>Gender</span><span id="resGender"></span></div>
+        <div class="result-row"><span>Submitted On</span><span id="resDate"></span></div>
+      </div>
+      <div class="status-msg" id="statusMsg"></div>
+    </div>
+
+    <a href="index.html" class="back-link">← Back to Home</a>
+  </div>
+</div>
+
+<script>
+  const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:5000/api'
+    : '/api';
+
+  const statusConfig = {
+    Pending:     { icon: '⏳', msg: 'Your application is under review by the NCC Unit. You will be contacted on WhatsApp if shortlisted.' },
+    Shortlisted: { icon: '📋', msg: 'Congratulations! You have been shortlisted. Please wait for further instructions regarding the physical and written tests.' },
+    Selected:    { icon: '🎖️', msg: 'Congratulations! You have been selected for NCC enrollment. The unit will contact you with joining details.' },
+    Rejected:    { icon: '❌', msg: 'We regret to inform you that your application was not selected this time. You may apply again in the next enrollment cycle.' }
+  };
+
+  async function checkStatus() {
+    const input = document.getElementById('appIdInput');
+    const errorMsg = document.getElementById('errorMsg');
+    const result = document.getElementById('result');
+    const btn = document.getElementById('checkBtn');
+    const appId = input.value.trim().toUpperCase();
+
+    errorMsg.classList.remove('show');
+    result.classList.remove('show');
+    input.classList.remove('error');
+
+    if (!appId) {
+      input.classList.add('error');
+      errorMsg.textContent = 'Please enter your Application ID.';
+      errorMsg.classList.add('show');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Checking...';
+
+    try {
+      const res = await fetch(`${API_BASE}/status/${appId}`);
+      const data = await res.json();
+
+      if (!data.success) {
+        input.classList.add('error');
+        errorMsg.textContent = data.message || 'Application not found.';
+        errorMsg.classList.add('show');
+        return;
+      }
+
+      const r = data.data;
+      const status = r.status;
+      const cfg = statusConfig[status] || statusConfig.Pending;
+      const cls = status.toLowerCase();
+
+      document.getElementById('resultHeader').className = `result-header ${cls}`;
+      document.getElementById('statusLabel').className = `status-label ${cls}`;
+      document.getElementById('statusLabel').textContent = status;
+      document.getElementById('statusIcon').textContent = cfg.icon;
+      document.getElementById('resName').textContent = r.name;
+      document.getElementById('resAppId').textContent = r.application_id;
+      document.getElementById('resCourse').textContent = r.course;
+      document.getElementById('resGender').textContent = r.gender;
+      document.getElementById('resDate').textContent = new Date(r.created_at).toLocaleDateString('en-IN');
+      document.getElementById('statusMsg').className = `status-msg ${cls}`;
+      document.getElementById('statusMsg').textContent = cfg.msg;
+      result.classList.add('show');
+    } catch {
+      errorMsg.textContent = 'Network error. Please try again.';
+      errorMsg.classList.add('show');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Check';
+    }
+  }
+
+  // Pre-fill from URL param
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+  if (id) { document.getElementById('appIdInput').value = id; checkStatus(); }
+
+  document.getElementById('appIdInput').addEventListener('keydown', e => { if (e.key === 'Enter') checkStatus(); });
+</script>
+</body>
+</html>

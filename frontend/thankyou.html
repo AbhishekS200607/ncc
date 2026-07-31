@@ -90,6 +90,7 @@
 
     <div class="action-btns">
       <a href="index.html" class="btn-home">← Back to Home</a>
+      <a id="checkStatusBtn" class="btn-print" style="text-decoration:none;">🔍 Check Status</a>
       <button class="btn-print" onclick="window.print()">🖨️ Print</button>
     </div>
   </div>
@@ -100,6 +101,7 @@
   const params = new URLSearchParams(window.location.search);
   const appId = params.get('id') || sessionStorage.getItem('applicationId') || 'N/A';
   document.getElementById('applicationId').textContent = appId;
+  document.getElementById('checkStatusBtn').href = `status.html?id=${appId}`;
   sessionStorage.removeItem('applicationId');
 </script>
 </body>
