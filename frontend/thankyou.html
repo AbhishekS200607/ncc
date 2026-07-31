@@ -47,6 +47,14 @@
     .header-bar { background: var(--olive-dark); padding: 1rem 2rem; display: flex; align-items: center; gap: 10px; }
     .header-bar span { color: var(--white); font-weight: 700; font-size: 1rem; }
     .header-bar em { color: var(--gold); font-style: normal; }
+    @media print {
+      body { background: white; }
+      .header-bar, .action-btns, .steps-list, .subtitle, .info-message { display: none !important; }
+      .thankyou-wrap { padding: 0; align-items: flex-start; }
+      .thankyou-card { box-shadow: none; border: 1px solid #ccc; padding: 2rem; max-width: 100%; }
+      .thankyou-card h1::after { content: ' — Save this page as PDF or print it for your records.'; font-size: 0.9rem; font-weight: 400; color: #555; display: block; margin-top: 4px; }
+      .app-id-box { border: 2px solid #4a5e23; background: #f9f9f9; }
+    }
     @media (max-width: 600px) {
       .thankyou-card { padding: 2rem 1.25rem; border-radius: 14px; }
       .thankyou-card h1 { font-size: 1.4rem; }
